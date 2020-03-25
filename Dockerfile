@@ -49,11 +49,11 @@ RUN curl -sL https://deb.nodesource.com/setup_10.x | bash - && \
        php7.2-soap \
        php7.2-zip \
        nodejs \
-       mysql-client \
-       mysql-server && \
+       ssh \
+       mysql-client && \
        rm -r /var/lib/apt/lists/*
 
-RUN pecl install imagick 
+RUN pecl install imagick xdebug
 
 RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
     && echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list
@@ -66,21 +66,28 @@ RUN apt purge -y software-properties-common && \
     apt autoremove -y --purge && \
     apt clean -y
 
-ARG BUILDKIT_UID=1000
-ARG BUILDKIT_GID=$BUILDKIT_UID
-RUN addgroup --gid=$BUILDKIT_GID buildkit
-RUN useradd --home-dir /buildkit --create-home --uid $BUILDKIT_UID --gid $BUILDKIT_GID buildkit
-COPY buildkit-sudoers /etc/sudoers.d/buildkit
-COPY --chown=buildkit:buildkit amp.services.yml /buildkit/.amp/services.yml
+ARG COMPUCORP_UID=1000
+ARG COMPUCORP_GID=$COMPUCORP_UID
+RUN addgroup --gid=$COMPUCORP_GID compucorp
+RUN useradd --home-dir /compucorp --create-home --uid $COMPUCORP_UID --gid $COMPUCORP_GID compucorp
+COPY compucorp-sudoers /etc/sudoers.d/compucorp
+COPY --chown=compucorp:compucorp amp.services.yml /compucorp/.amp/services.yml
 
-ENV PATH /buildkit/civicrm-buildkit/bin:$PATH
-
-RUN service mysql restart && \
-    mysql -e "CREATE USER 'buildkit'@'localhost' IDENTIFIED BY 'mysql'; GRANT ALL ON *.* to 'buildkit'@'localhost' IDENTIFIED BY 'mysql' WITH GRANT OPTION; FLUSH PRIVILEGES" && \
-    su - buildkit -c "git clone https://github.com/civicrm/civicrm-buildkit" && \
-    su - buildkit -c "/buildkit/civicrm-buildkit/bin/civi-download-tools" && \
-    su - buildkit -c "/buildkit/civicrm-buildkit/bin/civibuild create drupal-clean --civi-ver 5.19.4" && \
-    su - buildkit -c "mkdir /buildkit/civicrm-buildkit/build/drupal-clean/web/sites/all/modules/civicrm/ext" && \
+RUN su - compucorp -c "git clone https://github.com/civicrm/civicrm-buildkit" && \
+    su - compucorp -c "/compucorp/civicrm-buildkit/bin/civi-download-tools" && \
     rm -rf /tmp/*
 
-ENV CIVICRM_SETTINGS /buildkit/civicrm-buildkit/build/drupal-clean/web/sites/default/civicrm.settings.php
+ENV PATH /compucorp/civicrm-buildkit/bin:$PATH
+
+COPY .ssh /compucorp/.ssh/
+
+RUN su - compucorp -c "git clone git@bitbucket.org:compucorp/compuclient.git" && \
+    su - compucorp -c "cd /compucorp/compuclient/ && /compucorp/civicrm-buildkit/bin/drush make site.make.yml /compucorp/build/compuclient"
+
+RUN rm -rf .ssh/*
+
+COPY settings/settings.php /compucorp/settings.php
+COPY settings/civicrm.settings.php /compucorp/civicrm.settings.php
+
+COPY databases/civicrm.sql /compucorp/civicrm.sql
+COPY databases/drupal.sql /compucorp/drupal.sql
