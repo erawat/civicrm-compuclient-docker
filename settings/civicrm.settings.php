@@ -6,8 +6,8 @@ $civicrm_root = '/compucorp/build/compuclient/profiles/compuclient/modules/contr
 $templateDir = '/compucorp/build/compuclient/sites/default/files/civicrm/templates_c';
 
 define('CIVICRM_UF', 'Drupal');
-define('CIVICRM_UF_DSN', 'mysql://root:root@mysql-host:3306/compuclient_drupal?new_link=true');
-define('CIVICRM_DSN', 'mysql://root:root@mysql-host:3306/compuclient_civicrm?new_link=true');
+define('CIVICRM_UF_DSN', 'mysql://root:root@mysql:3306/compuclient_drupal?new_link=true');
+define('CIVICRM_DSN', 'mysql://root:root@mysql:3306/compuclient_civicrm?new_link=true');
 define('CIVICRM_UF_BASEURL', 'http://compuclient');
 define('CIVICRM_SITE_KEY', '408f89f82a0f8344760c62a81c691bf2');
 define('CIVICRM_DB_CACHE_CLASS', 'ArrayCache');
