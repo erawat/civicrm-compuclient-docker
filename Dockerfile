@@ -1,4 +1,4 @@
-FROM ubuntu:16.04
+FROM ubuntu:18.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -86,8 +86,10 @@ RUN su - compucorp -c "git clone git@bitbucket.org:compucorp/compuclient.git" &&
 
 RUN rm -rf .ssh/*
 
-COPY settings/settings.php /compucorp/settings.php
-COPY settings/civicrm.settings.php /compucorp/civicrm.settings.php
+COPY settings/settings.php /compucorp/build/compuclient/sites/default/settings.php
+COPY settings/civicrm.settings.php /compucorp/build/compuclient/sites/default/civicrm.settings.php
+
+ENV CIVICRM_SETTINGS /compucorp/build/compuclient/sites/default/civicrm.settings.php
 
 COPY databases/civicrm.sql /compucorp/civicrm.sql
 COPY databases/drupal.sql /compucorp/drupal.sql
