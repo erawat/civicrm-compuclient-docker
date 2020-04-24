@@ -4,8 +4,18 @@ global $civicrm_root, $civicrm_setting, $civicrm_paths;
 
 $civicrm_root = '/compucorp/build/compuclient/profiles/compuclient/modules/contrib/civicrm';
 $templateDir = '/compucorp/build/compuclient/sites/default/files/civicrm/templates_c';
+$civicrm_paths['civicrm.files']['path'] = '/compucorp/build/compuclient/sites/default/files/civicrm';
+$civicrm_paths['cms.root']['path'] = '/compucorp/build/compuclient';
 
-define('CIVICRM_UF', 'Drupal');
+if (!defined('CIVICRM_UF')) {
+  if (getenv('CIVICRM_UF')) {
+    define('CIVICRM_UF', getenv('CIVICRM_UF'));
+  }
+  else {
+    define('CIVICRM_UF', 'Drupal');
+  }
+}
+
 define('CIVICRM_UF_DSN', 'mysql://root:root@mysql:3306/compuclient_drupal?new_link=true');
 define('CIVICRM_DSN', 'mysql://root:root@mysql:3306/compuclient_civicrm?new_link=true');
 define('CIVICRM_UF_BASEURL', 'http://compuclient');
