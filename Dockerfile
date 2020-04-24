@@ -89,7 +89,5 @@ RUN rm -rf .ssh/*
 COPY settings/settings.php /compucorp/build/compuclient/sites/default/settings.php
 COPY settings/civicrm.settings.php /compucorp/build/compuclient/sites/default/civicrm.settings.php
 
-ENV CIVICRM_SETTINGS /compucorp/build/compuclient/sites/default/civicrm.settings.php
-
 COPY databases/civicrm.sql /compucorp/civicrm.sql
 COPY databases/drupal.sql /compucorp/drupal.sql
