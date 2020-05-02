@@ -73,8 +73,8 @@ RUN useradd --home-dir /compucorp --create-home --uid $COMPUCORP_UID --gid $COMP
 COPY compucorp-sudoers /etc/sudoers.d/compucorp
 COPY --chown=compucorp:compucorp amp.services.yml /compucorp/.amp/services.yml
 
-RUN git clone https://github.com/civicrm/civicrm-buildkit /compucorp/civicrm-buildkit && \
-   /compucorp/civicrm-buildkit/bin/civi-download-tools && \
+RUN su - compucorp -c "git clone https://github.com/civicrm/civicrm-buildkit /compucorp/civicrm-buildkit" && \
+    su - compucorp -c "/compucorp/civicrm-buildkit/bin/civi-download-tools" && \
     rm -rf /tmp/*
 
 ENV PATH /compucorp/civicrm-buildkit/bin:$PATH
@@ -87,7 +87,7 @@ RUN su - compucorp -c "git clone git@bitbucket.org:compucorp/compuclient.git" &&
 RUN rm -rf .ssh/*
 
 RUN cd /compucorp/build/compuclient/profiles/compuclient/modules/contrib/civicrm/ && \
-    /compucorp/civicrm-buildkit/bin/gitify drupal
+    /compucorp/civicrm-buildkit/bin/gitify drupal --branch 5.24.4
 
 COPY configs/setup.conf /compucorp/build/compuclient/profiles/compuclient/modules/contrib/civicrm/bin/setup.conf
 
